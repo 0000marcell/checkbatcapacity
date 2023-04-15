@@ -47,13 +47,14 @@ func (b *Battery) Status() string {
 func (b *Battery) CheckCapacity() string {
   if b.Capacity() < 30 && b.Status() != "Charging" {
     return "low"
+  } else if b.Capacity() < 50 && b.Status() != "Charging" { 
+    return "mid"
   } else {
     return "high"
   }
 }
 
 func main() {
- //runCronJobs()
  s := gocron.NewScheduler(time.UTC)
  bat1 := Battery{
    name: "BAT0",
@@ -62,12 +63,23 @@ func main() {
    name: "BAT1",
  }
 
- cmd := exec.Command("dunstify", "LOW BATTERY!!!")
+ lowbatcmd := exec.Command("dunstify", "LOW BATTERY!!!")
+ midbatcmd := exec.Command("dunstify", "Bat less then 50%!!!")
 
  s.Every(5).Seconds().Do(func() {
   if bat1.CheckCapacity() == "low" &&
      bat2.CheckCapacity() == "low" {
-    err := cmd.Run()
+    err := lowbatcmd.Run()
+    if err != nil {
+      fmt.Println("Error executing dunstify command ", err)
+    }  
+  }
+ })
+
+ s.Every(3600).Seconds().Do(func() {
+  if bat1.CheckCapacity() == "mid" ||
+     bat2.CheckCapacity() == "mid" {
+    err := midbatcmd.Run()
     if err != nil {
       fmt.Println("Error executing dunstify command ", err)
     }  
