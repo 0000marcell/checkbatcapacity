@@ -1,0 +1,5 @@
+3this is a test!!!23this is a test!!!
+2
+3
+3600 checking bat capacity, bat1: high bat2: low
+5 checking bat capacity, bat1: high bat2: low
